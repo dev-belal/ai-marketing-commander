@@ -1,6 +1,7 @@
 'use server'
 
 import { createAdminClient } from '@/lib/supabase/admin'
+import { verifyTurnstile } from '@/lib/security/verify-turnstile'
 
 export type RequestAccessState = {
   error: string | null
@@ -16,9 +17,15 @@ export async function requestAccess(
   const accountType = formData.get('accountType') as string
   const company = formData.get('company') as string
   const reason = formData.get('reason') as string
+  const turnstileToken = formData.get('turnstileToken') as string
 
   if (!name || !email || !accountType) {
     return { error: 'Name, email, and account type are required.', success: false }
+  }
+
+  const turnstileValid = await verifyTurnstile(turnstileToken ?? '')
+  if (!turnstileValid) {
+    return { error: 'Security verification failed. Please try again.', success: false }
   }
 
   if (!['solo', 'team'].includes(accountType)) {

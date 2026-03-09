@@ -1,0 +1,19 @@
+{
+  "functions": {
+    "src/app/api/seo-blog/start/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/blog-audit/start/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/reports/generate/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/audits/run/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/content/generate/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

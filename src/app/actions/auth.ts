@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { verifyTurnstile } from '@/lib/security/verify-turnstile'
 
 export type AuthState = {
   error: string | null
@@ -75,9 +76,15 @@ export async function signIn(
 ): Promise<AuthState> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const turnstileToken = formData.get('turnstileToken') as string
 
   if (!email || !password) {
     return { error: 'Email and password are required.' }
+  }
+
+  const turnstileValid = await verifyTurnstile(turnstileToken ?? '')
+  if (!turnstileValid) {
+    return { error: 'Security verification failed. Please try again.' }
   }
 
   const supabase = await createClient()

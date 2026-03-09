@@ -1,6 +1,9 @@
+export const maxDuration = 60
+
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium-min'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { generateAuditReport } from '@/lib/pdf/generate-report'
@@ -66,8 +69,12 @@ export async function POST(request: Request) {
   let pdfBuffer: Buffer
   try {
     const browser = await puppeteer.launch({
+      args: chromium.args,
+      defaultViewport: { width: 1280, height: 720 },
+      executablePath: await chromium.executablePath(
+        'https://github.com/Sparticuz/chromium/releases/download/v131.0.1/chromium-v131.0.1-pack.tar'
+      ),
       headless: true,
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     })
     const page = await browser.newPage()
     await page.setContent(reportData.html, { waitUntil: 'networkidle0' })

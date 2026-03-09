@@ -18,7 +18,17 @@ import {
   approveLogo,
   rejectLogo,
 } from '@/app/actions/admin'
-import { CheckIcon, XIcon, LoaderIcon, UsersIcon, BuildingIcon, ImageIcon } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { CheckIcon, XIcon, LoaderIcon, UsersIcon, BuildingIcon, ImageIcon, SendIcon, RotateCwIcon, BanIcon } from 'lucide-react'
 
 type InviteRequest = {
   id: string
@@ -68,7 +78,7 @@ type AdminDashboardProps = {
   pendingLogos: PendingLogo[]
 }
 
-const TABS = ['Pending Requests', 'Logo Approvals', 'All Users', 'Invites Sent'] as const
+const TABS = ['Pending Requests', 'Send Invites', 'Logo Approvals', 'All Users', 'Invites Sent'] as const
 type Tab = (typeof TABS)[number]
 
 function AdminDashboard({ requests, agencies, invites, agencyMap, pendingLogos }: AdminDashboardProps) {
@@ -106,6 +116,9 @@ function AdminDashboard({ requests, agencies, invites, agencyMap, pendingLogos }
 
       {activeTab === 'Pending Requests' && (
         <PendingRequestsTab requests={requests} agencyMap={agencyMap} />
+      )}
+      {activeTab === 'Send Invites' && (
+        <SendInvitesTab />
       )}
       {activeTab === 'Logo Approvals' && (
         <LogoApprovalsTab logos={pendingLogos} />
@@ -526,7 +539,198 @@ function AllUsersTab({ agencies }: { agencies: Agency[] }) {
   )
 }
 
+function SendInvitesTab() {
+  const [mode, setMode] = useState<'single' | 'bulk'>('single')
+  const [email, setEmail] = useState('')
+  const [bulkEmails, setBulkEmails] = useState('')
+  const [accountType, setAccountType] = useState('solo')
+  const [message, setMessage] = useState('')
+  const [isPending, startTransition] = useTransition()
+
+  function handleSend() {
+    const emails = mode === 'single'
+      ? [email.trim()]
+      : bulkEmails
+          .split(/[,\n]/)
+          .map((e) => e.trim())
+          .filter(Boolean)
+
+    if (emails.length === 0) {
+      toast.error('Please enter at least one email address.')
+      return
+    }
+
+    const invalidEmail = emails.find((e) => !e.includes('@'))
+    if (invalidEmail) {
+      toast.error(`Invalid email: ${invalidEmail}`)
+      return
+    }
+
+    startTransition(async () => {
+      try {
+        const response = await fetch('/api/admin/send-invite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            emails,
+            accountType,
+            personalMessage: message || undefined,
+          }),
+        })
+
+        const data = await response.json() as { success: boolean; error?: string; sent?: number }
+
+        if (!response.ok || !data.success) {
+          toast.error(data.error ?? 'Failed to send invites.')
+        } else {
+          toast.success(`Sent ${data.sent ?? emails.length} invite${emails.length > 1 ? 's' : ''}!`)
+          setEmail('')
+          setBulkEmails('')
+          setMessage('')
+        }
+      } catch {
+        toast.error('Failed to send invites. Please try again.')
+      }
+    })
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-base">
+          <SendIcon className="size-4" />
+          Send Beta Invitations
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex gap-1 rounded-lg bg-muted p-1 w-fit">
+          <button
+            onClick={() => setMode('single')}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              mode === 'single'
+                ? 'bg-background shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Single
+          </button>
+          <button
+            onClick={() => setMode('bulk')}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              mode === 'bulk'
+                ? 'bg-background shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Bulk
+          </button>
+        </div>
+
+        {mode === 'single' ? (
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="invite-email">Email address</Label>
+            <Input
+              id="invite-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="user@example.com"
+              disabled={isPending}
+            />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="invite-bulk">Email addresses (one per line or comma-separated)</Label>
+            <Textarea
+              id="invite-bulk"
+              value={bulkEmails}
+              onChange={(e) => setBulkEmails(e.target.value)}
+              placeholder={"user1@example.com\nuser2@example.com\nuser3@example.com"}
+              rows={5}
+              disabled={isPending}
+            />
+          </div>
+        )}
+
+        <div className="flex flex-col gap-2">
+          <Label>Account type</Label>
+          <Select value={accountType} onValueChange={(value) => { if (value) setAccountType(value) }}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="solo">Solo</SelectItem>
+              <SelectItem value="team">Team</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="invite-message">Personal message (optional)</Label>
+          <Textarea
+            id="invite-message"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Welcome to the beta! We're excited to have you..."
+            rows={3}
+            disabled={isPending}
+          />
+        </div>
+
+        <Button onClick={handleSend} disabled={isPending}>
+          {isPending ? (
+            <LoaderIcon className="size-4 animate-spin" />
+          ) : (
+            <SendIcon className="size-4" />
+          )}
+          {isPending ? 'Sending...' : 'Send Invites'}
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
 function InvitesSentTab({ invites }: { invites: Invite[] }) {
+  const [isPending, startTransition] = useTransition()
+
+  function handleResend(email: string) {
+    startTransition(async () => {
+      try {
+        const response = await fetch('/api/admin/send-invite', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ emails: [email], accountType: 'solo' }),
+        })
+        const data = await response.json() as { success: boolean; error?: string }
+        if (!response.ok || !data.success) {
+          toast.error(data.error ?? 'Failed to resend invite.')
+        } else {
+          toast.success(`Resent invite to ${email}`)
+        }
+      } catch {
+        toast.error('Failed to resend invite.')
+      }
+    })
+  }
+
+  function handleRevoke(inviteId: string) {
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/admin/invites?id=${inviteId}`, {
+          method: 'DELETE',
+        })
+        const data = await response.json() as { success: boolean; error?: string }
+        if (!response.ok || !data.success) {
+          toast.error(data.error ?? 'Failed to revoke invite.')
+        } else {
+          toast.success('Invite revoked')
+        }
+      } catch {
+        toast.error('Failed to revoke invite.')
+      }
+    })
+  }
+
   if (invites.length === 0) {
     return (
       <Card>
@@ -550,6 +754,7 @@ function InvitesSentTab({ invites }: { invites: Invite[] }) {
             const expiresAt = new Date(invite.expires_at)
             const isExpired = expiresAt < new Date()
             const isUsed = invite.used_at !== null
+            const isRevoked = expiresAt.getTime() === 0
 
             let statusLabel: string
             let statusVariant: 'default' | 'secondary' | 'destructive'
@@ -557,6 +762,9 @@ function InvitesSentTab({ invites }: { invites: Invite[] }) {
             if (isUsed) {
               statusLabel = 'Used'
               statusVariant = 'default'
+            } else if (isRevoked) {
+              statusLabel = 'Revoked'
+              statusVariant = 'destructive'
             } else if (isExpired) {
               statusLabel = 'Expired'
               statusVariant = 'destructive'
@@ -570,6 +778,9 @@ function InvitesSentTab({ invites }: { invites: Invite[] }) {
               { month: 'short', day: 'numeric', year: 'numeric' }
             )
 
+            const canResend = isExpired || isRevoked
+            const canRevoke = !isUsed && !isRevoked && !isExpired
+
             return (
               <div
                 key={invite.id}
@@ -578,14 +789,42 @@ function InvitesSentTab({ invites }: { invites: Invite[] }) {
                 <div className="space-y-0.5">
                   <p className="text-sm font-medium">{invite.email}</p>
                   <p className="text-xs text-muted-foreground">
-                    {invite.account_type} &middot; Sent {date} &middot; Expires{' '}
-                    {expiresAt.toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })}
+                    {invite.account_type} &middot; Sent {date}
+                    {!isRevoked && (
+                      <> &middot; Expires{' '}
+                        {expiresAt.toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </>
+                    )}
                   </p>
                 </div>
-                <Badge variant={statusVariant}>{statusLabel}</Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant={statusVariant}>{statusLabel}</Badge>
+                  {canResend && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleResend(invite.email)}
+                      disabled={isPending}
+                    >
+                      <RotateCwIcon className="size-3" />
+                      Resend
+                    </Button>
+                  )}
+                  {canRevoke && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleRevoke(invite.id)}
+                      disabled={isPending}
+                    >
+                      <BanIcon className="size-3" />
+                      Revoke
+                    </Button>
+                  )}
+                </div>
               </div>
             )
           })}

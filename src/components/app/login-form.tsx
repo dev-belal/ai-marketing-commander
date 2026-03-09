@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { useActionState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Turnstile } from '@marsidev/react-turnstile'
 
 const initialState: AuthState = { error: null }
 
@@ -22,6 +24,9 @@ function LoginForm() {
   const [state, formAction, isPending] = useActionState(signIn, initialState)
   const searchParams = useSearchParams()
   const reason = searchParams.get('reason')
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
   return (
     <Card>
@@ -56,7 +61,15 @@ function LoginForm() {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Label htmlFor="password">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="password">Password</Label>
+              <Link
+                href="/forgot-password"
+                className="text-xs text-muted-foreground hover:text-primary underline-offset-4 hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
             <Input
               id="password"
               name="password"
@@ -67,6 +80,14 @@ function LoginForm() {
               autoComplete="current-password"
             />
           </div>
+          {siteKey && (
+            <Turnstile
+              siteKey={siteKey}
+              onSuccess={(token) => setTurnstileToken(token)}
+              options={{ appearance: 'interaction-only' }}
+            />
+          )}
+          <input type="hidden" name="turnstileToken" value={turnstileToken ?? ''} />
         </CardContent>
         <CardFooter className="flex flex-col gap-3">
           <Button
