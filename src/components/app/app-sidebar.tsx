@@ -70,14 +70,13 @@ function AppSidebar({ agencyName, agencyLogoUrl, logoStatus, role, accountType }
     { title: 'Overview', href: '/dashboard', icon: LayoutDashboardIcon },
     { title: 'Clients', href: '/clients', icon: UsersIcon },
     { title: 'Audits', href: '/audits', icon: SearchIcon },
+    ...(canViewAnalytics(role)
+      ? [{ title: 'Analytics', href: '/analytics', icon: BarChart3Icon } as NavItem]
+      : []),
     { title: 'Reports', href: '/reports', icon: FileTextIcon },
   ]
 
   const bottomItems: NavItem[] = []
-
-  if (canViewAnalytics(role) && isTeamAccount(accountType)) {
-    bottomItems.push({ title: 'Analytics', href: '/analytics', icon: BarChart3Icon })
-  }
 
   if (canViewTeamPage(role) && isTeamAccount(accountType)) {
     bottomItems.push({ title: 'Team', href: '/team', icon: UserPlusIcon })
