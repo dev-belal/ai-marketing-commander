@@ -1,4 +1,5 @@
 import { Syne, DM_Sans } from 'next/font/google'
+import { ThemeProvider } from '@/contexts/theme-context'
 
 const syne = Syne({
   subsets: ['latin'],
@@ -19,7 +20,9 @@ export default function MarketingLayout({
 }) {
   return (
     <div className={`${syne.variable} ${dmSans.variable} ${dmSans.className}`}>
-      {children}
+      <ThemeProvider>
+        {children}
+      </ThemeProvider>
     </div>
   )
 }

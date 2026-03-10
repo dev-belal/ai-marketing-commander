@@ -5,6 +5,7 @@ import { Features } from '@/components/marketing/features'
 import { HowItWorks } from '@/components/marketing/how-it-works'
 import { Pricing } from '@/components/marketing/pricing'
 import { FAQ } from '@/components/marketing/faq'
+import { CTA } from '@/components/marketing/cta'
 import { Footer } from '@/components/marketing/footer'
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default function MarketingPage() {
       <HowItWorks />
       <Pricing />
       <FAQ />
+      <CTA />
       <Footer />
     </>
   )

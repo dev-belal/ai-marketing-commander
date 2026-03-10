@@ -116,6 +116,274 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Marketing theme variables */
+:root,
+[data-theme='dark'] {
+  --mk-bg-primary: #080B14;
+  --mk-bg-secondary: #0D1117;
+  --mk-bg-card: rgba(255, 255, 255, 0.03);
+  --mk-bg-nav: rgba(8, 11, 20, 0.3);
+  --mk-bg-nav-scrolled: rgba(8, 11, 20, 0.7);
+  --mk-text-primary: #ffffff;
+  --mk-text-secondary: #94A3B8;
+  --mk-text-muted: #64748B;
+  --mk-border: rgba(255, 255, 255, 0.06);
+  --mk-accent: #2563EB;
+  --mk-accent2: #06B6D4;
+
+  /* Sections that flip: features, how-it-works */
+  --mk-section-bg: #ffffff;
+  --mk-section-bg-alt: #F8FAFC;
+  --mk-section-card-bg: #F8FAFC;
+  --mk-section-card-border: #E2E8F0;
+  --mk-section-heading: #0F172A;
+  --mk-section-text: #64748B;
+  --mk-section-line: #E2E8F0;
+  --mk-section-icon-bg-from: #EFF6FF;
+  --mk-section-icon-bg-to: #DBEAFE;
+  --mk-section-number-color: rgba(37, 99, 235, 0.06);
+
+  /* FAQ section */
+  --mk-faq-bg: #0D1117;
+  --mk-faq-heading: #ffffff;
+  --mk-faq-subtext: #94A3B8;
+  --mk-faq-question: #ffffff;
+  --mk-faq-answer: #94A3B8;
+  --mk-faq-border: rgba(255, 255, 255, 0.06);
+  --mk-faq-icon: #a1a1aa;
+
+  /* Footer */
+  --mk-footer-bg: #060912;
+  --mk-footer-heading: #ffffff;
+  --mk-footer-text: #94A3B8;
+  --mk-footer-muted: #64748B;
+  --mk-footer-border: rgba(255, 255, 255, 0.06);
+  --mk-footer-separator: linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.5) 20%, rgba(6,182,212,0.5) 50%, rgba(37,99,235,0.5) 80%, transparent 100%);
+
+  /* Nav link colors */
+  --mk-nav-link: #a1a1aa;
+  --mk-nav-link-hover: #2563EB;
+}
+
+[data-theme='light'] {
+  /* Nav */
+  --mk-bg-nav: rgba(248, 250, 255, 0.92);
+  --mk-bg-nav-scrolled: rgba(248, 250, 255, 0.95);
+  --mk-text-primary: #0F172A;
+  --mk-text-secondary: #334155;
+  --mk-text-muted: #64748B;
+  --mk-border: rgba(37, 99, 235, 0.12);
+  --mk-accent: #2563EB;
+  --mk-accent2: #0891B2;
+  --mk-nav-link: #334155;
+  --mk-nav-link-hover: #2563EB;
+
+  /* Features section */
+  --mk-section-bg: #F0F4FF;
+  --mk-section-bg-alt: #ffffff;
+  --mk-section-card-bg: #ffffff;
+  --mk-section-card-border: #DBEAFE;
+  --mk-section-card-shadow: 0 4px 20px rgba(37, 99, 235, 0.06);
+  --mk-section-heading: #0F172A;
+  --mk-section-text: #475569;
+  --mk-section-line: #DBEAFE;
+  --mk-section-icon-bg-from: #EFF6FF;
+  --mk-section-icon-bg-to: #DBEAFE;
+  --mk-section-number-color: rgba(37, 99, 235, 0.05);
+
+  /* FAQ section */
+  --mk-faq-bg: #EEF2FF;
+  --mk-faq-heading: #0F172A;
+  --mk-faq-subtext: #475569;
+  --mk-faq-question: #0F172A;
+  --mk-faq-answer: #475569;
+  --mk-faq-border: #DBEAFE;
+  --mk-faq-icon: #2563EB;
+
+  /* Footer */
+  --mk-footer-bg: #EEF2FF;
+  --mk-footer-heading: #0F172A;
+  --mk-footer-text: #475569;
+  --mk-footer-muted: #94A3B8;
+  --mk-footer-border: #DBEAFE;
+  --mk-footer-separator: linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.4) 20%, rgba(6,182,212,0.4) 50%, rgba(37,99,235,0.4) 80%, transparent 100%);
+}
+
+/* Light theme — Hero */
+[data-theme='light'] .hero-section {
+  background: linear-gradient(135deg, #0F1C3F 0%, #1E3A8A 40%, #1D4ED8 70%, #2563EB 100%) !important;
+}
+
+/* Light mode — Hero badge */
+[data-theme='light'] .hero-badge {
+  background: rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(255,255,255,0.45) !important;
+  backdrop-filter: blur(12px) !important;
+}
+[data-theme='light'] .hero-badge span {
+  color: #ffffff !important;
+}
+
+/* Light mode — Stats pill */
+[data-theme='light'] .hero-stats-pill {
+  background: rgba(255,255,255,0.18) !important;
+  border: 1px solid rgba(255,255,255,0.45) !important;
+  backdrop-filter: blur(12px) !important;
+}
+[data-theme='light'] .hero-stats-pill .stat-number {
+  color: #ffffff !important;
+}
+[data-theme='light'] .hero-stats-pill .stat-label {
+  color: rgba(255,255,255,0.8) !important;
+}
+[data-theme='light'] .hero-stats-pill .stat-divider {
+  background: rgba(255,255,255,0.3) !important;
+}
+[data-theme='light'] .hero-stats-pill .stat-open {
+  color: #86EFAC !important;
+}
+
+/* Light theme — Navbar button */
+[data-theme='light'] .nav-request-btn {
+  border: 1px solid #2563EB !important;
+  color: #2563EB !important;
+  background: transparent !important;
+}
+[data-theme='light'] .nav-request-btn:hover {
+  background: #2563EB !important;
+  color: #ffffff !important;
+}
+[data-theme='light'] .nav-request-btn .nav-btn-gradient-border,
+[data-theme='light'] .nav-request-btn .nav-btn-gradient-fill {
+  display: none !important;
+}
+.nav-link {
+  color: #94A3B8;
+}
+.nav-link:hover {
+  color: #2563EB !important;
+}
+[data-theme='light'] .nav-link {
+  color: #334155 !important;
+}
+[data-theme='light'] .nav-link:hover {
+  color: #2563EB !important;
+}
+[data-theme='light'] .nav-theme-btn {
+  background: #ffffff !important;
+  border: 1px solid #DBEAFE !important;
+}
+[data-theme='light'] .nav-theme-btn:hover {
+  background: #EFF6FF !important;
+  border-color: #2563EB !important;
+}
+
+/* Light theme — Pricing */
+[data-theme='light'] .pricing-section {
+  background: linear-gradient(135deg, #1E3A8A 0%, #1E40AF 50%, #1D4ED8 100%) !important;
+}
+[data-theme='light'] .pricing-section .pricing-separator {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent) !important;
+}
+[data-theme='light'] .pricing-section .pricing-grid-lines {
+  background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px) !important;
+}
+[data-theme='light'] .pricing-card-highlight {
+  background: rgba(255,255,255,0.15) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+  box-shadow: 0 0 40px rgba(255,255,255,0.1) !important;
+}
+[data-theme='light'] .pricing-card {
+  background: rgba(255,255,255,0.1) !important;
+  border-color: rgba(255,255,255,0.2) !important;
+}
+[data-theme='light'] .pricing-headline {
+  color: #ffffff !important;
+}
+[data-theme='light'] .pricing-subtext {
+  color: rgba(255,255,255,0.7) !important;
+}
+
+/* Light theme — CTA */
+[data-theme='light'] .cta-section {
+  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 100%) !important;
+}
+[data-theme='light'] .cta-section .cta-separator {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent) !important;
+}
+[data-theme='light'] .cta-card {
+  background: rgba(255,255,255,0.1) !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  backdrop-filter: blur(12px) !important;
+}
+[data-theme='light'] .cta-eyebrow {
+  color: #93C5FD !important;
+}
+[data-theme='light'] .cta-headline {
+  color: #ffffff !important;
+}
+[data-theme='light'] .cta-subtext {
+  color: rgba(255,255,255,0.75) !important;
+}
+[data-theme='light'] .cta-primary-btn {
+  background: #ffffff !important;
+  color: #1E3A8A !important;
+}
+[data-theme='light'] .cta-primary-btn:hover {
+  background: #EFF6FF !important;
+}
+[data-theme='light'] .cta-secondary-btn {
+  border-color: rgba(255,255,255,0.4) !important;
+  color: #ffffff !important;
+}
+
+/* Light theme — Booking page */
+[data-theme='light'] .book-page {
+  background: linear-gradient(135deg, #0F1C3F 0%, #1E3A8A 40%, #1D4ED8 100%) !important;
+}
+[data-theme='light'] .book-label {
+  color: #93C5FD !important;
+}
+[data-theme='light'] .book-headline {
+  color: #ffffff !important;
+}
+[data-theme='light'] .book-subtext {
+  color: rgba(255,255,255,0.75) !important;
+}
+[data-theme='light'] .book-benefit-text {
+  color: rgba(255,255,255,0.85) !important;
+}
+[data-theme='light'] .book-benefit-icon {
+  background: rgba(255,255,255,0.15) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: #ffffff !important;
+}
+[data-theme='light'] .book-divider {
+  background: rgba(255,255,255,0.15) !important;
+}
+[data-theme='light'] .book-who-heading {
+  color: #ffffff !important;
+}
+[data-theme='light'] .book-who-text {
+  color: rgba(255,255,255,0.65) !important;
+}
+[data-theme='light'] .book-cal-wrapper {
+  background: rgba(255,255,255,0.1) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2) !important;
+}
+
+/* Light theme — Legal pages */
+[data-theme='light'] .legal-hero {
+  background: linear-gradient(135deg, #0F1C3F 0%, #1E3A8A 100%) !important;
+}
+
+/* Smooth theme transitions */
+[data-theme] .theme-transition,
+[data-theme] .theme-transition * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
