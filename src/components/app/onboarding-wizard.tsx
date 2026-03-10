@@ -1,25 +1,48 @@
 'use client'
 
 import { useState, useTransition, useRef } from 'react'
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { motion } from 'framer-motion'
+import { Zap, CheckCircle2, Loader, Upload, X } from 'lucide-react'
 import { completeOnboarding } from '@/app/actions/onboarding'
 import { createBrowserClient } from '@supabase/ssr'
-import { CheckCircle2Icon, LoaderIcon, UploadIcon, XIcon } from 'lucide-react'
+import { DotGridBackground } from '@/components/auth/dot-grid-background'
 
 type BgRemovalPhase = 'idle' | 'loading-model' | 'processing' | 'done' | 'failed'
 
 type OnboardingWizardProps = {
   agencyName: string
   agencyId: string
+}
+
+const inputStyle: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.1)',
+  borderRadius: '10px',
+  padding: '14px 18px',
+  color: '#ffffff',
+  fontSize: '15px',
+  width: '100%',
+  outline: 'none',
+  transition: 'border-color 0.2s, box-shadow 0.2s',
+  fontFamily: 'inherit',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: '13px',
+  fontWeight: 500,
+  color: '#94A3B8',
+  marginBottom: '6px',
+  display: 'block',
+}
+
+function handleInputFocus(e: React.FocusEvent<HTMLInputElement>) {
+  e.target.style.borderColor = 'rgba(37,99,235,0.6)'
+  e.target.style.boxShadow = '0 0 0 3px rgba(37,99,235,0.12)'
+}
+
+function handleInputBlur(e: React.FocusEvent<HTMLInputElement>) {
+  e.target.style.borderColor = 'rgba(255,255,255,0.1)'
+  e.target.style.boxShadow = 'none'
 }
 
 function OnboardingWizard({ agencyName, agencyId }: OnboardingWizardProps) {
@@ -113,7 +136,6 @@ function OnboardingWizard({ agencyName, agencyId }: OnboardingWizardProps) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
-    // Upload original
     const originalPath = `${agencyId}/original.png`
     const { error: origError } = await supabase.storage
       .from('logos')
@@ -124,7 +146,6 @@ function OnboardingWizard({ agencyName, agencyId }: OnboardingWizardProps) {
       return null
     }
 
-    // Upload processed (or original if bg removal failed)
     const processedFile = processedBlob ?? originalFile
     const processedPath = `${agencyId}/processed.png`
     const { error: procError } = await supabase.storage
@@ -176,35 +197,149 @@ function OnboardingWizard({ agencyName, agencyId }: OnboardingWizardProps) {
   const isRemoving = bgRemovalPhase === 'loading-model' || bgRemovalPhase === 'processing'
 
   return (
-    <div className="space-y-6">
-      {error && (
-        <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {error}
-        </div>
-      )}
+    <div
+      style={{
+        position: 'relative',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#080B14',
+        overflow: 'hidden',
+        padding: '20px',
+      }}
+    >
+      <DotGridBackground />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Agency Details</CardTitle>
-          <CardDescription>
-            Tell us about your agency. You can update these later in Settings.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="agency-name">Agency Name</Label>
-            <Input
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+        style={{
+          background: 'rgba(255,255,255,0.03)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: '20px',
+          padding: '40px',
+          backdropFilter: 'blur(20px)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.4)',
+          width: '100%',
+          maxWidth: '560px',
+          position: 'relative',
+          zIndex: 10,
+        }}
+      >
+        {/* Logo */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            marginBottom: '28px',
+          }}
+        >
+          <div
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              background: 'rgba(37,99,235,0.1)',
+              border: '1px solid rgba(37,99,235,0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Zap size={16} color="#2563EB" />
+          </div>
+          <span
+            style={{
+              fontSize: '16px',
+              fontWeight: 700,
+              color: '#ffffff',
+              fontFamily: 'var(--font-syne), Syne, sans-serif',
+            }}
+          >
+            AI Marketing{' '}
+            <span style={{ color: '#2563EB' }}>Commander</span>
+          </span>
+        </div>
+
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <h1
+            style={{
+              fontSize: '24px',
+              fontWeight: 700,
+              color: '#ffffff',
+              margin: '0 0 8px',
+              fontFamily: 'var(--font-syne), Syne, sans-serif',
+            }}
+          >
+            Set up your workspace
+          </h1>
+          <p style={{ fontSize: '14px', color: '#64748B', margin: 0 }}>
+            Tell us about your agency
+          </p>
+        </div>
+
+        {/* Divider */}
+        <div
+          style={{
+            height: '1px',
+            background: 'rgba(255,255,255,0.06)',
+            marginBottom: '24px',
+          }}
+        />
+
+        {error && (
+          <div
+            style={{
+              borderRadius: '10px',
+              background: 'rgba(239,68,68,0.08)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              padding: '10px 14px',
+              fontSize: '13px',
+              color: '#FCA5A5',
+              marginBottom: '16px',
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Agency Name */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            style={{ display: 'flex', flexDirection: 'column' }}
+          >
+            <label htmlFor="agency-name" style={labelStyle}>
+              Agency Name
+            </label>
+            <input
               id="agency-name"
               value={agency}
               onChange={(e) => setAgency(e.target.value)}
-              placeholder="Acme Marketing"
+              placeholder="e.g. Acme Marketing Agency"
+              style={inputStyle}
+              onFocus={handleInputFocus}
+              onBlur={handleInputBlur}
             />
-          </div>
+          </motion.div>
 
-          <div className="space-y-2">
-            <Label>Agency Logo (optional)</Label>
-            <p className="text-xs text-muted-foreground">
-              Upload your logo and we&apos;ll automatically remove the background. Your logo will be reviewed before appearing in dashboards.
+          {/* Logo Upload */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 }}
+            style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}
+          >
+            <label style={labelStyle}>Agency Logo (optional)</label>
+            <p style={{ fontSize: '12px', color: '#475569', margin: '0 0 8px' }}>
+              Upload your logo and we&apos;ll automatically remove the background.
             </p>
 
             {!logoPreview ? (
@@ -215,57 +350,177 @@ function OnboardingWizard({ agencyName, agencyId }: OnboardingWizardProps) {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') fileInputRef.current?.click()
                 }}
-                className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-muted-foreground/25 px-6 py-8 transition-colors hover:border-muted-foreground/50"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  borderRadius: '12px',
+                  border: '2px dashed rgba(255,255,255,0.12)',
+                  padding: '32px',
+                  textAlign: 'center',
+                  background: 'rgba(255,255,255,0.02)',
+                  cursor: 'pointer',
+                  transition: 'border-color 0.2s, background 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(37,99,235,0.4)'
+                  e.currentTarget.style.background = 'rgba(37,99,235,0.04)'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.02)'
+                }}
               >
-                <UploadIcon className="size-8 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground">Click to upload PNG, JPG, or WEBP</p>
+                <Upload size={28} color="#64748B" />
+                <p style={{ fontSize: '13px', color: '#94A3B8', margin: 0 }}>
+                  Drop your logo here or click to upload
+                </p>
+                <p style={{ fontSize: '12px', color: '#475569', margin: 0 }}>
+                  PNG, JPG, SVG up to 5MB
+                </p>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {bgRemovalPhase === 'loading-model' && (
-                  <div className="flex items-center gap-2 rounded-md bg-blue-50 border border-blue-200 px-3 py-2">
-                    <LoaderIcon className="size-3.5 animate-spin text-blue-600" />
-                    <span className="text-xs text-blue-700">
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      borderRadius: '10px',
+                      background: 'rgba(37,99,235,0.08)',
+                      border: '1px solid rgba(37,99,235,0.25)',
+                      padding: '8px 14px',
+                    }}
+                  >
+                    <Loader size={14} className="animate-spin" color="#60A5FA" />
+                    <span style={{ fontSize: '12px', color: '#93C5FD' }}>
                       Preparing AI background removal (first time only)...
                     </span>
                   </div>
                 )}
 
-                <div className="relative inline-block rounded-lg border overflow-hidden">
-                  <div className="p-4 bg-muted/50">
-                    <img src={logoPreview} alt="Agency logo" className="max-h-28 max-w-full object-contain" />
+                <div
+                  style={{
+                    position: 'relative',
+                    display: 'inline-block',
+                    borderRadius: '12px',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      padding: '16px',
+                      background: 'rgba(255,255,255,0.02)',
+                    }}
+                  >
+                    <img
+                      src={logoPreview}
+                      alt="Agency logo"
+                      style={{ maxHeight: '112px', maxWidth: '100%', objectFit: 'contain' }}
+                    />
                   </div>
                   {isRemoving && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/50 rounded-lg">
-                      <LoaderIcon className="size-6 animate-spin text-white" />
-                      <span className="mt-1.5 text-xs font-medium text-white">Removing background...</span>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: 'rgba(0,0,0,0.6)',
+                        borderRadius: '12px',
+                      }}
+                    >
+                      <Loader size={24} className="animate-spin" color="#ffffff" />
+                      <span style={{ marginTop: '8px', fontSize: '12px', fontWeight: 500, color: '#ffffff' }}>
+                        Removing background...
+                      </span>
                     </div>
                   )}
                   {bgRemovalPhase === 'done' && (
-                    <div className="absolute top-1.5 right-1.5 flex items-center gap-1 rounded-full bg-green-600 px-2 py-0.5 shadow-sm">
-                      <CheckCircle2Icon className="size-3 text-white" />
-                      <span className="text-[10px] font-medium text-white">Background removed</span>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        top: '8px',
+                        right: '8px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        borderRadius: '999px',
+                        background: 'rgba(34,197,94,0.9)',
+                        padding: '3px 10px',
+                      }}
+                    >
+                      <CheckCircle2 size={12} color="#ffffff" />
+                      <span style={{ fontSize: '10px', fontWeight: 600, color: '#ffffff' }}>
+                        Background removed
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {bgRemovalPhase === 'processing' && (
-                  <div className="max-w-xs space-y-1">
-                    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <div style={{ maxWidth: '280px' }}>
+                    <div
+                      style={{
+                        height: '6px',
+                        width: '100%',
+                        borderRadius: '999px',
+                        background: 'rgba(255,255,255,0.06)',
+                        overflow: 'hidden',
+                      }}
+                    >
                       <div
-                        className="h-full rounded-full bg-primary transition-all duration-300"
-                        style={{ width: `${bgRemovalProgress}%` }}
+                        style={{
+                          height: '100%',
+                          borderRadius: '999px',
+                          background: 'linear-gradient(135deg, #2563EB, #06B6D4)',
+                          transition: 'width 0.3s',
+                          width: `${bgRemovalProgress}%`,
+                        }}
                       />
                     </div>
-                    <p className="text-[11px] text-muted-foreground">Removing background: {bgRemovalProgress}%</p>
+                    <p style={{ fontSize: '11px', color: '#64748B', marginTop: '4px' }}>
+                      Removing background: {bgRemovalProgress}%
+                    </p>
                   </div>
                 )}
 
                 <div>
-                  <Button variant="outline" size="sm" onClick={handleRemoveLogo}>
-                    <XIcon className="size-3" />
+                  <button
+                    onClick={handleRemoveLogo}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                      background: 'transparent',
+                      padding: '6px 14px',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                      color: '#94A3B8',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s, border-color 0.2s',
+                      fontFamily: 'inherit',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent'
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'
+                    }}
+                  >
+                    <X size={12} />
                     Remove logo
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}
@@ -276,16 +531,36 @@ function OnboardingWizard({ agencyName, agencyId }: OnboardingWizardProps) {
               accept="image/png,image/jpeg,image/webp"
               onChange={handleFileSelect}
               className="hidden"
+              style={{ display: 'none' }}
             />
-          </div>
+          </motion.div>
 
-          <div className="flex justify-end">
-            <Button onClick={handleFinish} disabled={isPending}>
+          {/* Finish button */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+            <motion.button
+              onClick={handleFinish}
+              disabled={isPending}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              style={{
+                background: 'linear-gradient(135deg, #2563EB, #06B6D4)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '10px',
+                padding: '13px 32px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: isPending ? 'not-allowed' : 'pointer',
+                transition: 'opacity 0.2s',
+                opacity: isPending ? 0.6 : 1,
+                fontFamily: 'inherit',
+              }}
+            >
               {isPending ? 'Setting up...' : 'Finish Setup'}
-            </Button>
+            </motion.button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </motion.div>
     </div>
   )
 }

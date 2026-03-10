@@ -36,11 +36,5 @@ export default async function OnboardingPage() {
     redirect('/dashboard')
   }
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4 py-8">
-      <div className="w-full max-w-2xl">
-        <OnboardingWizard agencyName={agency?.name ?? ''} agencyId={profile.agency_id} />
-      </div>
-    </div>
-  )
+  return <OnboardingWizard agencyName={agency?.name ?? ''} agencyId={profile.agency_id} />
 }

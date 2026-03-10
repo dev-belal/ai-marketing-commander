@@ -1,4 +1,9 @@
 export async function verifyTurnstile(token: string): Promise<boolean> {
+  // Allow localhost bypass in development
+  if (token === 'localhost-bypass-token' && process.env.NODE_ENV === 'development') {
+    return true
+  }
+
   const secret = process.env.TURNSTILE_SECRET_KEY
   if (!secret) {
     // Skip verification in dev or if not configured
