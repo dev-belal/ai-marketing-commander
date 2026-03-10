@@ -200,11 +200,11 @@ function SignupForm() {
   return (
     <div
       style={{
-        position: 'relative',
-        minHeight: '100vh',
         display: 'flex',
-        background: '#F0F4FF',
+        height: '100vh',
         overflow: 'hidden',
+        background: '#F0F4FF',
+        position: 'relative',
       }}
     >
       {/* Keyframe animations */}
@@ -301,11 +301,15 @@ function SignupForm() {
         className="signup-left-col"
         style={{
           width: '45%',
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          flexShrink: 0,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '60px',
-          position: 'relative',
+          padding: '60px 48px',
+          overflow: 'hidden',
           zIndex: 1,
         }}
       >
@@ -422,16 +426,20 @@ function SignupForm() {
 
       {/* RIGHT COLUMN — Signup Card */}
       <div
-        className="signup-right-col"
+        className="signup-right-col auth-scroll-col"
         style={{
           width: '55%',
+          height: '100vh',
+          overflowY: 'scroll',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
-          padding: '40px',
+          padding: '60px 40px',
           position: 'relative',
           zIndex: 1,
-        }}
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+        } as React.CSSProperties}
       >
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -444,11 +452,15 @@ function SignupForm() {
             borderRadius: '24px',
             padding: '36px',
             width: '100%',
-            maxWidth: '420px',
+            maxWidth: '460px',
             boxShadow:
               '0 4px 6px rgba(37,99,235,0.04), 0 20px 60px rgba(37,99,235,0.08), 0 0 0 1px rgba(255,255,255,0.5) inset',
             position: 'relative',
             zIndex: 10,
+            marginTop: 'auto',
+            marginBottom: 'auto',
+            paddingTop: '20px',
+            paddingBottom: '40px',
           }}
         >
           {/* Beta badge */}
@@ -607,9 +619,11 @@ function SignupForm() {
                       borderRadius: '10px',
                       border: '1px solid #E2E8F0',
                       padding: '10px 12px',
-                      cursor: 'pointer',
+                      cursor: 'not-allowed',
                       transition: 'border-color 0.2s, background 0.2s',
                       background: 'rgba(255,255,255,0.6)',
+                      opacity: 0.5,
+                      pointerEvents: 'none',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -618,11 +632,25 @@ function SignupForm() {
                         id="account-team"
                         name="accountType"
                         value="team"
-                        disabled={isPending}
+                        disabled
                         className="accent-[#2563EB]"
                       />
-                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, color: '#0F172A' }}>
                         Team
+                        <span
+                          style={{
+                            fontSize: '10px',
+                            fontWeight: 600,
+                            letterSpacing: '1px',
+                            color: '#2563EB',
+                            background: 'rgba(37,99,235,0.08)',
+                            border: '1px solid rgba(37,99,235,0.2)',
+                            borderRadius: '999px',
+                            padding: '2px 8px',
+                          }}
+                        >
+                          Coming Soon
+                        </span>
                       </span>
                     </div>
                     <p style={{ fontSize: '11px', color: '#64748B', margin: 0 }}>
